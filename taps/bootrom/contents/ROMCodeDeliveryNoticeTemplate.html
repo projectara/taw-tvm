@@ -63,29 +63,40 @@
             </style>
     </head>
 
+    <%!
+        import datetime
+    %>
+
     <body class="c5">
-        <div><p class="c1"><span class="c2"></span></p><p class="c10 c16"><span class="c2">@@TopMarking@@</span></p><p class="c10 c12 c17"><span></span></p></div>
+        <div><p class="c1"><span class="c2"></span></p><p class="c10 c16"><span class="c2">${top_marking}</span></p><p class="c10 c12 c17"><span></span></p></div>
         <p class="c10 c16"><span class="c18">Google Project Ara</span></p>
-        <p class="c10 c16"><span class="c9">ROM Code Delivery Notice</span><sup><a href="#cmnt1" name="cmnt_ref1">[a]</a></sup></p>
+        <p class="c10 c16"><span class="c9">ROM Code Delivery Notice</span></p>
         <p class="c1"><span class="c9"></span></p>
         <p class="c10 c12"><span></span></p>
         <p class="c10"><span>Project:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c13">@@ProjectName@@</span></p>
-        <p class="c10"><span>Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c13">@@DateTime@@</span></p>
+        <p class="c10">
+                <span>Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="c13">${"%Y-%m-%d %H:%M %Z (%A)".format(datetime.now())}</span>
+        </p>
         <p class="c10"><span>Version:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c13">@@Version@@</span></p>
         <p class="c10 c12"><span></span></p>
-        <p class="c10"><span>Checksum:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">@@cs[0:7]@@ @@cs[8:15]@@ @@cs[16:23]@@ @@cs[24:31]@@</span><sup><a href="#cmnt2" name="cmnt_ref2">[b]</a></sup></p>
+        <p class="c10"><span>Checksum:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">@@cs[0:7]@@ @@cs[8:15]@@ @@cs[16:23]@@ @@cs[24:31]@@</span></p>
         <p class="c10"><span>&nbsp;(by sha256sum)</span><span class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@@cs[32:39]@@ @@cs[40:47]@@ @@cs[48:55]@@ @@cs[56:63]@@</span></p>
         <p class="c10 c12"><span></span></p>
         <p class="c10 c12"><span></span></p>
         <p class="c10"><span>There are two files in this delivery:</span></p>
-        <ul class="c14 lst-kix_s4ubokj7wmwg-0 start"><li class="c10 c15"><span class="c13">@@DeliveryFileName@@</span></li></ul>
-        <ul class="c14 lst-kix_s4ubokj7wmwg-1 start"><li class="c6"><span>The actual Boot ROM binaries, hex and DAT files, and source</span><sup><a href="#cmnt3" name="cmnt_ref3">[c]</a></sup></li></ul>
-        <ul class="c14 lst-kix_s4ubokj7wmwg-0"><li class="c10 c15"><span class="c13">@@ChecksumFileName@@</span></li></ul>
-        <ul class="c14 lst-kix_s4ubokj7wmwg-1 start"><li class="c6"><span>The SHA-256 checksum of the tar file, calculated when it was created. Note that this checksum covers everything in the tar file, not just the Boot ROM image itself.</span></li></ul>
+        <li class="c10 c15"><span class="c13">${delivery_files_name}.tar.gz</span></li>
+        <li class="c6"><span>The actual Boot ROM binaries, hex and DAT files, and source</span></li>
+        <li class="c10 c15"><span class="c13">${delivery_files_name}.sha256</span></li>
+        <li class="c6"><span>The SHA-256 checksum of the tar file, calculated when it was created. Note that this checksum covers everything in the tar file, not just the Boot ROM image itself.</span></li>
         <p class="c10 c12"><span></span></p>
-        <p class="c10"><span>The tar file contains the following files;</span></p>
-        <p class="c8"><span class="c13">@@ListOfContents@@</span><sup><a href="#cmnt4" name="cmnt_ref4">[d]</a></sup></p>
+        <p class="c10"><span>The tar file contains the following files:</span></p>
+        <p class="c8">
+        % for f in tar_contents:
+        <li class="c10 c15"><span class="c13">${f}</span></li>
+        % endfor
+        </p>
         <p class="c3"><span></span></p>
-        <div><p class="c1"><span class="c2"></span></p><p class="c10 c16"><span class="c2">@@TopMarking@@</span></p></div>
+        <div><p class="c1"><span class="c2"></span></p><p class="c10 c16"><span class="c2">${top_marking}</span></p></div>
     </body>
 </html>
