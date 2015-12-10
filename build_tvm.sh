@@ -17,9 +17,10 @@ apt-get install --assume-yes live-build live-boot live-config &&
 cd taps/$1 &&
 mkdir -p tvm &&
 cd tvm &&
-lb config --binary-images iso-hybrid -a $ARCH &&
+lb config --binary-images iso-hybrid -a $ARCH --debian-installer live &&
 echo "Initialized fresh Debian Live template for TVM [OK]" &&
 cat ../packages > config/package-lists/tvm.list.chroot &&
+echo "debian-installer-launcher sudo user-setup" >> config/package-lists/tvm.list.chroot &&
 echo "Added package list for Trusted VM to image template [OK]" &&
 cd config/includes.chroot/ &&
 mkdir -p etc/skel &&
@@ -27,7 +28,11 @@ cd etc/skel &&
 ../../../../../fetch.sh &&
 cp -R ../../../../../contents/* . &&
 echo "Downloaded needed repositories and archives into live-user home directory for TVM [OK]" &&
-cd ../../../../ &&
+cd ../ &&
+mkdir -p live/config/ &&
+cd live/config &&
+echo "LIVE_USER_DEFAULT_GROUPS=\"audio cdrom dip floppy video plugdev netdev powerdev scanner bluetooth sudoers\"\n" > user-setup.conf &&
+cd ../../../../../ &&
 sudo lb build &&
 cp live-image-$ARCH.hybrid.iso "$2" &&
 echo "Wrote Debian Live ISO to USB medium [OK]"
