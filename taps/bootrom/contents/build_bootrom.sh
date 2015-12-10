@@ -22,6 +22,12 @@ export DELIVERY_ROOT=~ &&
 cd bootrom-tools/scripts &&
 ./makedelivery --rev=1b3b7678eea6f8fa8d747f22b31ff119a2396e12 &&
 
+cd ~/Toshiba_Drop &&
+tar -zxvf 20151016-2042-PDT.es3-bootrom-delivery.tar.gz &&
+cd .. &&
+./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcAP.dat es3-bootrom-delivery/bromcAP.dat &&
+./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcGP.dat es3-bootrom-delivery/bromcGP.dat &&
+
 cd ~ &&
 mkdir delivery_archive &&
 mv *.es3-bootrom-delivery.{tar.gz,sha256} delivery_archive &&
