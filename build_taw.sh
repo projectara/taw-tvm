@@ -16,8 +16,9 @@ cd config &&
 echo "qemu qemu-utils qemu-system" > package-lists/twa.list.chroot &&
 echo "task-cinnamon-desktop" > package-lists/desktop.list.chroot &&
 mkdir -p includes.chroot/etc/skel &&
+echo -en "#!/bin/sh\nqemu-img create -f qcow2 \$2_hda.qcow2 32G &&\nqemu-system-i386 -m 2048 -cdrom \$1 -hda \$2_hda.qcow2\n" > includes.chroot/etc/skel/install_tvm.sh &&
 echo -en "#!/bin/sh\nqemu-system-i386 -m 2048 -cdrom \$1\n" > includes.chroot/etc/skel/run_qemu.sh &&
-chmod +x includes.chroot/etc/skel/run_qemu.sh &&
+chmod +x includes.chroot/etc/skel/{install_tvm,run_qemu}.sh &&
 cd .. &&
 lb build &&
 echo "Built Debian Live ISO for TAW [OK]" &&
