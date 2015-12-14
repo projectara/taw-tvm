@@ -73,15 +73,19 @@
         <p class="c10 c16"><span class="c9">ROM Code Delivery Notice</span></p>
         <p class="c1"><span class="c9"></span></p>
         <p class="c10 c12"><span></span></p>
-        <p class="c10"><span>Project:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c13">@@ProjectName@@</span></p>
+        <p class="c10"><span>Project:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c13">${delivery_files_name}</span></p>
         <p class="c10">
-                <span>Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span class="c13">${"%Y-%m-%d %H:%M %Z (%A)".format(datetime.now())}</span>
+                <span>Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="c13">${datetime.datetime.now().strftime("%Y-%m-%d %H:%M %Z (%A)")}</span>
         </p>
-        <p class="c10"><span>Version:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c13">@@Version@@</span></p>
+        <p class="c10"><span>Version:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c13">${git_hash}</span></p>
         <p class="c10 c12"><span></span></p>
-        <p class="c10"><span>Checksum:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">@@cs[0:7]@@ @@cs[8:15]@@ @@cs[16:23]@@ @@cs[24:31]@@</span></p>
-        <p class="c10"><span>&nbsp;(by sha256sum)</span><span class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@@cs[32:39]@@ @@cs[40:47]@@ @@cs[48:55]@@ @@cs[56:63]@@</span></p>
+        <p class="c10"><span>Checksum:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		<span class="c0">${" ".join(sha_sum[i*8:i*8+7] for i in range(0, 4))}</span>
+	</p>
+        <p class="c10"><span>&nbsp;(by sha256sum)</span>
+		<span class="c0">&nbsp;&nbsp;&nbsp;${" ".join(sha_sum[i*8:i*8+7] for i in range(4, 8))}</span>
+	</p>
         <p class="c10 c12"><span></span></p>
         <p class="c10 c12"><span></span></p>
         <p class="c10"><span>There are two files in this delivery:</span></p>

@@ -1,1 +1,1 @@
-libusb-dev libpci-dev build-essential autoconf pkg-config libtool git gperf flex bison libncurses5 libncurses5-dev python python-dev python-virtualenv python-mako genisoimage
+libusb-dev libpci-dev build-essential autoconf pkg-config libtool git gperf flex bison libncurses5 libncurses5-dev python python-dev python-virtualenv python-mako genisoimage lynx pandoc texlive-latex-recommended texlive-xetex

@@ -8,11 +8,11 @@ source .profile &&
 
 cd flashrom &&
 make &&
-sudo make install &&
 cd .. &&
 
 export PATH=~/bootrom-tools/scripts:~/bootrom-tools:$PATH &&
 export BOOTROM_ROOT=~/bootrom &&
+export BOOTROM_TOOLS=~/bootrom-tools &&
 export KEY_DIR=~/bin &&
 export DROP_ASSEMBLY_DIR=~/bootrom-tools/es3-test &&
 export TEST_DROP_DIR=~/es3-test &&
@@ -27,6 +27,8 @@ tar -zxvf 20151016-2042-PDT.es3-bootrom-delivery.tar.gz &&
 cd .. &&
 ./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcAP.dat es3-bootrom-delivery/bromcAP.dat &&
 ./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcGP.dat es3-bootrom-delivery/bromcGP.dat &&
+./report.py ROMCodeDeliveryNotice.html.template 1b3b7678eea6f8fa8d747f22b31ff119a2396e12 > ROMCodeDeliveryNotice.html &&
+pandoc -s ROMCodeDeliveryNotice.html --latex-engine=xelatex -o ROMCodeDeliveryNotice.pdf
 
 cd ~ &&
 mkdir delivery_archive &&
