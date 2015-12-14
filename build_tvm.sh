@@ -28,11 +28,7 @@ cd etc/skel &&
 ../../../../../fetch.sh &&
 cp -R ../../../../../contents/* . &&
 echo "Downloaded needed repositories and archives into live-user home directory for TVM [OK]" &&
-cd ../ &&
-mkdir -p live/config/ &&
-cd live/config &&
-echo "LIVE_USER_DEFAULT_GROUPS=\"audio cdrom dip floppy video plugdev netdev powerdev scanner bluetooth sudoers\"\n" > user-setup.conf &&
-cd ../../../../../ &&
+cd ../../../../ &&
 sudo lb build &&
 cp live-image-$ARCH.hybrid.iso "$2" &&
 echo "Wrote Debian Live ISO to USB medium [OK]"
