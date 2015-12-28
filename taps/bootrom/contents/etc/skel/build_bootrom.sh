@@ -30,7 +30,7 @@ cd .. &&
 ./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcAP.dat es3-bootrom-delivery/bromcAP.dat &&
 ./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcGP.dat es3-bootrom-delivery/bromcGP.dat &&
 ./report.py ROMCodeDeliveryNotice.html.template 1b3b7678eea6f8fa8d747f22b31ff119a2396e12 > ROMCodeDeliveryNotice.html &&
-pandoc -s ROMCodeDeliveryNotice.html --latex-engine=xelatex -o ROMCodeDeliveryNotice.pdf
+xvfb-run --server-args="-screen 0, 1024x768x24" /usr/bin/wkhtmltopdf ROMCodeDeliveryNotice.html ROMCodeDeliveryNotice.pdf &&
 
 cd ~ &&
 mkdir delivery_archive &&
