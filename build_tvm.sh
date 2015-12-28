@@ -25,6 +25,7 @@ echo "Added package list for Trusted VM to image template [OK]" &&
 cd config/includes.chroot/ &&
 cp -R ../../../contents/* . &&
 ../../../fetch.sh &&
+mkdir -p media/user/tashare &&
 echo "Copied disk contents into TVM image [OK]" &&
 cd ../.. &&
 sudo lb build &&

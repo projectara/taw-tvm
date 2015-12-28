@@ -18,6 +18,7 @@ echo "task-cinnamon-desktop" > package-lists/desktop.list.chroot &&
 mkdir -p includes.chroot/ &&
 cd includes.chroot/ &&
 cp -R ../../../contents/* . &&
+mkdir -p etc/skel/tashare &&
 cd ../../ &&
 lb build &&
 echo "Built Debian Live ISO for TAW [OK]" &&
