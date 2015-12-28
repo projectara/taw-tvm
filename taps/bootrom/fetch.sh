@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd etc/skel &&
 git clone https://github.com/projectara/manifesto.git &&
 git clone https://github.com/projectara/flashrom.git &&
 git clone https://github.com/projectara/bootrom.git &&

@@ -23,12 +23,10 @@ cat ../packages > config/package-lists/tvm.list.chroot &&
 echo "debian-installer-launcher sudo user-setup" >> config/package-lists/tvm.list.chroot &&
 echo "Added package list for Trusted VM to image template [OK]" &&
 cd config/includes.chroot/ &&
-mkdir -p etc/skel &&
-cd etc/skel &&
-../../../../../fetch.sh &&
-cp -R ../../../../../contents/* . &&
-echo "Downloaded needed repositories and archives into live-user home directory for TVM [OK]" &&
-cd ../../../../ &&
+cp -R ../../../contents/* . &&
+../../../fetch.sh &&
+echo "Copied disk contents into TVM image [OK]" &&
+cd ../.. &&
 sudo lb build &&
 cp live-image-$ARCH.hybrid.iso "$2" &&
 echo "Wrote Debian Live ISO to USB medium [OK]"
