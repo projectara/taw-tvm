@@ -13,13 +13,12 @@ cd taw/image &&
 lb config --binary-images iso-hybrid &&
 echo "Initialized fresh Debian Live template for TAW [OK]" &&
 cd config &&
-echo "qemu qemu-utils qemu-system" > package-lists/twa.list.chroot &&
+echo "qemu qemu-utils qemu-system" > package-lists/taw.list.chroot &&
 echo "task-cinnamon-desktop" > package-lists/desktop.list.chroot &&
-mkdir -p includes.chroot/etc/skel &&
-echo -en "#!/bin/sh\nqemu-img create -f qcow2 \$2_hda.qcow2 32G &&\nqemu-system-i386 -m 2048 -cdrom \$1 -hda \$2_hda.qcow2\n" > includes.chroot/etc/skel/install_tvm.sh &&
-echo -en "#!/bin/sh\nqemu-system-i386 -m 2048 -cdrom \$1\n" > includes.chroot/etc/skel/run_qemu.sh &&
-chmod +x includes.chroot/etc/skel/{install_tvm,run_qemu}.sh &&
-cd .. &&
+mkdir -p includes.chroot/ &&
+cd includes.chroot/ &&
+cp -R ../../../contents/* . &&
+cd ../../ &&
 lb build &&
 echo "Built Debian Live ISO for TAW [OK]" &&
 cp live-image-amd64.hybrid.iso "$1" &&
