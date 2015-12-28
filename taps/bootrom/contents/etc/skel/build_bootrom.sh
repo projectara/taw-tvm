@@ -33,4 +33,5 @@ pandoc -s ROMCodeDeliveryNotice.html --latex-engine=xelatex -o ROMCodeDeliveryNo
 cd ~ &&
 mkdir delivery_archive &&
 mv *.es3-bootrom-delivery.{tar.gz,sha256} delivery_archive &&
+cp ROMCodeDeliveryNotice.pdf delivery_archive &&
 genisoimage -iso-level 4 -o delivery_archive.iso delivery_archive
