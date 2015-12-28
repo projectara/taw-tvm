@@ -24,6 +24,8 @@ cd bootrom-tools/scripts &&
 
 cd ~/Toshiba_Drop &&
 tar -zxvf 20151016-2042-PDT.es3-bootrom-delivery.tar.gz &&
+sha256sum < es3-bootrom-delivery/bromcAP.bin > es3-bootrom-delivery/bromcAP.sha256 &&
+sha256sum < es3-bootrom-delivery/bromcGP.bin > es3-bootrom-delivery/bromcGP.sha256 &&
 cd .. &&
 ./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcAP.dat es3-bootrom-delivery/bromcAP.dat &&
 ./compare_bootroms.py Toshiba_Drop/es3-bootrom-delivery/bromcGP.dat es3-bootrom-delivery/bromcGP.dat &&
