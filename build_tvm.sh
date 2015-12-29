@@ -19,8 +19,9 @@ mkdir -p tvm &&
 cd tvm &&
 lb config --binary-images iso-hybrid -a $ARCH --debian-installer live &&
 echo "Initialized fresh Debian Live template for TVM [OK]" &&
-cat ../packages > config/package-lists/tvm.list.chroot &&
-echo "debian-installer-launcher sudo user-setup" >> config/package-lists/tvm.list.chroot &&
+# Add cross-TAP packages to the specific TVM's package list
+cat ../../packages > config/package-lists/tvm.list.chroot &&
+cat ../packages >> config/package-lists/tvm.list.chroot &&
 echo "Added package list for Trusted VM to image template [OK]" &&
 cd config/includes.chroot/ &&
 cp -R ../../../contents/* . &&

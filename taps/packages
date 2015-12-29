@@ -1,0 +1,4 @@
+debian-installer-launcher sudo user-setup
+wkhtmltopdf xvfb python-mako
+libncurses5 libncurses5-dev python python-dev python-virtualenv
+genisoimage
