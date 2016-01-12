@@ -1,0 +1,4 @@
+#!/bin/sh
+
+chmod 777 /media/user/tashare
+mount -t 9p -o trans=virtio,version=9p2000.L,users tashare /media/user/tashare
