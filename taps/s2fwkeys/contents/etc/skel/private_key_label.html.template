@@ -4,6 +4,10 @@
     <meta content="text/html; charset=windows-1252" http-equiv="content-type">
     <title>Test Page</title>
   </head>
+  <%!
+    import datetime
+    import socket
+  %>
   <body> .<br>
     <br>
     <table style="width: 13.2in; height: 9.5in;" border="0">
@@ -34,10 +38,15 @@
                 </tr>
                 <tr align="center">
                   <td style="height: 1.22in; background-color: white;">
-                    <span style="font-weight: bold;">@@TITLE@@</span><br>
-                    @@SUBTITLE1@@<br>
-                    @@SUBTITLE2@@<br>
-                    @@SUBTITLE3@@</td>
+                    <span style="font-weight: bold;">Google Project Ara</span><br>
+                    S2FVK ${keyfile_prefix}<br>
+                    <small>
+                        Created on: ${datetime.datetime.now().strftime("%Y-%m-%d %H:%M %Z (%A)")}
+                    </small><br>
+                    <small>
+                        Created by: ${username} on ${socket.gethostname()}
+                    </small>
+                  </td>
                 </tr>
                 <tr>
                   <td style="height: 2.47in;"><br>
@@ -45,9 +54,9 @@
                 </tr>
                 <tr align="center">
                   <td style="height: 1.53in;"><br>
-                    EXTREMELY SENSITIVE MATERIAL<br>
-                    <strong>PHYSICAL SECURITY REQUIRED </strong><br>
-                    Google Confidential Restricted<br>
+                    HIGH INTEGRITY MATERIAL<br>
+                    Copyright (c) 2015, Google, Inc.<br>
+                    <br>
                     &nbsp;</td>
                 </tr>
               </tbody>
@@ -62,19 +71,26 @@
                 </tr>
                 <tr align="center">
                   <td style="height: 1.22in; background-color: white;">
-                    <span style="font-weight: bold;">@@TITLE@@</span><br>
-                    @@SUBTITLE1@@<br>
-                    @@SUBTITLE2@@<br>
-                    @@SUBTITLE3@@</td>
+                    <span style="font-weight: bold;">Google Project Ara</span><br>
+                    S2FVK ${keyfile_prefix}<br>
+                    <small>
+                        Created on: ${datetime.datetime.now().strftime("%Y-%m-%d %H:%M %Z (%A)")}
+                    </small><br>
+                    <small>
+                        Created by: ${username} on ${socket.gethostname()}
+                    </small>
+                  </td>
                 </tr>
                 <tr>
                   <td style="height: 2.47in;"><br>
                   </td>
                 </tr>
                 <tr align="center">
-                  <td style="height: 1.22in;">EXTREMELY SENSITIVE MATERIAL<br>
-                    <strong>PHYSICAL SECURITY REQUIRED </strong><br>
-                    Google Confidential Restricted</td>
+                  <td style="height: 1.53in;"><br>
+                    HIGH INTEGRITY MATERIAL<br>
+                    Copyright (c) 2015, Google, Inc.<br>
+                    <br>
+                    &nbsp;</td>
                 </tr>
                 <tr>
                   <td style="height: 0.74in;"><br>

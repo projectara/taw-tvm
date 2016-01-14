@@ -22,6 +22,22 @@ def run_in_shell(cmd, d, pipe_target=None, pipe_flag='a'):
                                         subproc_err.output))
         raise subproc_err
 
+def wkhtmltopdf(html, pdf):
+    cmd = 'xvfb-run --server-args="-screen 0, 1024x768x24" '
+    cmd += 'wkhtmltopdf '
+    cmd += '--page-size Letter --orientation landscape '
+    cmd += '--page-width 8.5in --page-height 11in '
+    cmd += '--margin-bottom 0 --margin-top 0 --margin-right 2.5 '
+    cmd += html + ' ' + pdf
+    run_in_shell(cmd, tap_dialog)
+
+def generate_dvd_label(label, user, keyfile_prefix, tap_dialog):
+    template = Template(filename=label+'.html.template')
+    with open(label + '.html', 'w') as dvd_label:
+        report = template.render(keyfile_prefix=keyfile_prefix, username=user)
+        dvd_label.write(report)
+    wkhtmltopdf(label + '.html', label + '.pdf')
+
 locale.setlocale(locale.LC_ALL, '')
 
 tap_dialog = dialog.Dialog(dialog="dialog")
@@ -60,4 +76,9 @@ if code == tap_dialog.OK:
             cmd = "./pem2arakeys {0}.public.pem --format rsa2048-sha256 --usage {1}"
             cmd = cmd.format(key_file, public_keys_name_suffix)
             run_in_shell(cmd, tap_dialog, public_key_file)
+            #TODO: Generate DVD labels from HTML templates
+            generate_dvd_label('private_key_label', user_fields[0],
+                               keyfile_prefix, tap_dialog)
+            generate_dvd_label('public_key_label', user_fields[0],
+                               keyfile_prefix, tap_dialog)
 
