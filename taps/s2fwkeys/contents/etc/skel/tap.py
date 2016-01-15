@@ -7,6 +7,7 @@ import datetime
 from mako.template import Template
 from validate_email.validate_email import validate_email
 from fnmatch import fnmatch
+import os
 
 public_key_file = "public_keys.c"
 public_keys_name_suffix = "s2fvk.projectara.com"
@@ -72,6 +73,11 @@ def query_parameters(tap_dialog):
             return tap_dialog.CANCEL, [], ''
     return code, user_fields, keyfile_prefix
 
+def generate_disk_image(which, label, keyfile_prefix, tap_dialog):
+    cmd = 'xorriso -as mkisofs -r -J -o {0}.iso -volid "{1}-{2}" {0}/'
+    cmd = cmd.format(which, label, keyfile_prefix)
+    run_in_shell(cmd, tap_dialog)
+
 locale.setlocale(locale.LC_ALL, '')
 
 tap_dialog = dialog.Dialog(dialog="dialog")
@@ -79,22 +85,24 @@ tap_dialog.set_background_title("Generate Stage 2 Firmware Keys")
 
 code, user_fields, keyfile_prefix = query_parameters(tap_dialog)
 if code == tap_dialog.OK:
+    os.makedirs('public/', exist_ok=True)
+    os.makedirs('private/', exist_ok=True)
     num_keys = int(user_fields[3])
     for i in range(0, num_keys):
         key_file = keyfile_prefix + '-%.2d' % (i)
-        cmd = 'openssl genrsa -aes256 -passout pass:{pw} -out {keyfile}.private.pem 2048'
+        cmd = 'openssl genrsa -aes256 -passout pass:{pw} -out private/{keyfile}.private.pem 2048'
         cmd = cmd.format(pw=user_fields[4], keyfile=key_file)
         run_in_shell(cmd, tap_dialog)
-        cmd = 'openssl rsa -passin pass:{pw} -in {keyfile}.private.pem '
-        cmd += '-outform PEM -pubout -out {keyfile}.public.pem'
+        cmd = 'openssl rsa -passin pass:{pw} -in private/{keyfile}.private.pem '
+        cmd += '-outform PEM -pubout -out public/{keyfile}.public.pem'
         cmd = cmd.format(pw=user_fields[4], keyfile=key_file)
         run_in_shell(cmd, tap_dialog)
-        with open(public_key_file, 'w') as pkf:
+        with open('public/' + public_key_file, 'w') as pkf:
             pkf.write("/* Google Project Ara - Stage 2 Firmware Validation Keys */\n")
             pkf.write("/* Key ID {0} */\n".format(keyfile_prefix))
             pkf.write("/* Automatically generated file ... DO NOT EDIT */\n")
             pkf.write("\n")
-        cmd = "./pem2arakeys {0}.public.pem --format rsa2048-sha256 --usage {1}"
+        cmd = "./pem2arakeys public/{0}.public.pem --format rsa2048-sha256 --usage {1}"
         cmd = cmd.format(key_file, public_keys_name_suffix)
         run_in_shell(cmd, tap_dialog, public_key_file)
         #TODO: Generate DVD labels from HTML templates
@@ -102,3 +110,11 @@ if code == tap_dialog.OK:
                            keyfile_prefix, tap_dialog)
         generate_dvd_label('public_key_label', user_fields[0],
                            keyfile_prefix, tap_dialog)
+        #Generate disc image for public keys
+        generate_disk_image('public', 'S2FVK', keyfile_prefix, tap_dialog)
+        #Generate disc image for private keys
+        generate_disk_image('private', 'S2FSK', keyfile_prefix, tap_dialog)
+        #Move the disc images and DVD labels to the shared directory
+        cmd = 'mv {0}.iso {1}.iso {0}_key_label.pdf {1}_key_label.pdf /media/user/tashare'
+        cmd = cmd.format('public', 'private')
+        run_in_shell(cmd, tap_dialog)
