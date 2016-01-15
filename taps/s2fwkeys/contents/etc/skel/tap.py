@@ -89,32 +89,53 @@ if code == tap_dialog.OK:
     os.makedirs('private/', exist_ok=True)
     num_keys = int(user_fields[3])
     for i in range(0, num_keys):
-        key_file = keyfile_prefix + '-%.2d' % (i)
-        cmd = 'openssl genrsa -aes256 -passout pass:{pw} -out private/{keyfile}.private.pem 2048'
-        cmd = cmd.format(pw=user_fields[4], keyfile=key_file)
-        run_in_shell(cmd, tap_dialog)
-        cmd = 'openssl rsa -passin pass:{pw} -in private/{keyfile}.private.pem '
-        cmd += '-outform PEM -pubout -out public/{keyfile}.public.pem'
-        cmd = cmd.format(pw=user_fields[4], keyfile=key_file)
-        run_in_shell(cmd, tap_dialog)
-        with open('public/' + public_key_file, 'w') as pkf:
-            pkf.write("/* Google Project Ara - Stage 2 Firmware Validation Keys */\n")
-            pkf.write("/* Key ID {0} */\n".format(keyfile_prefix))
-            pkf.write("/* Automatically generated file ... DO NOT EDIT */\n")
-            pkf.write("\n")
-        cmd = "./pem2arakeys public/{0}.public.pem --format rsa2048-sha256 --usage {1}"
-        cmd = cmd.format(key_file, public_keys_name_suffix)
-        run_in_shell(cmd, tap_dialog, public_key_file)
-        #TODO: Generate DVD labels from HTML templates
-        generate_dvd_label('private_key_label', user_fields[0],
-                           keyfile_prefix, tap_dialog)
-        generate_dvd_label('public_key_label', user_fields[0],
-                           keyfile_prefix, tap_dialog)
-        #Generate disc image for public keys
-        generate_disk_image('public', 'S2FVK', keyfile_prefix, tap_dialog)
-        #Generate disc image for private keys
-        generate_disk_image('private', 'S2FSK', keyfile_prefix, tap_dialog)
-        #Move the disc images and DVD labels to the shared directory
-        cmd = 'mv {0}.iso {1}.iso {0}_key_label.pdf {1}_key_label.pdf /media/user/tashare'
-        cmd = cmd.format('public', 'private')
-        run_in_shell(cmd, tap_dialog)
+        try:
+            # Generate key file name
+            key_file = keyfile_prefix + '-%.2d' % (i)
+            # Generate private key PEM
+            tap_dialog.gauge_start(text='Generating private key PEM', percent=0)
+            cmd = 'openssl genrsa -aes256 -passout pass:{pw} -out private/{keyfile}.private.pem 2048'
+            cmd = cmd.format(pw=user_fields[4], keyfile=key_file)
+            run_in_shell(cmd, tap_dialog)
+            # Generate public key PEM
+            tap_dialog.gauge_update(15, text='Generating public key PEM',
+                                    update_text=True)
+            cmd = 'openssl rsa -passin pass:{pw} -in private/{keyfile}.private.pem '
+            cmd += '-outform PEM -pubout -out public/{keyfile}.public.pem'
+            cmd = cmd.format(pw=user_fields[4], keyfile=key_file)
+            run_in_shell(cmd, tap_dialog)
+            # Generate public key C file
+            tap_dialog.gauge_update(30, text='Generating public key C source',
+                                    update_text=True)
+            with open('public/' + public_key_file, 'w') as pkf:
+                pkf.write("/* Google Project Ara - Stage 2 Firmware Validation Keys */\n")
+                pkf.write("/* Key ID {0} */\n".format(keyfile_prefix))
+                pkf.write("/* Automatically generated file ... DO NOT EDIT */\n")
+                pkf.write("\n")
+            cmd = "./pem2arakeys public/{0}.public.pem --format rsa2048-sha256 --usage {1}"
+            cmd = cmd.format(key_file, public_keys_name_suffix)
+            run_in_shell(cmd, tap_dialog, public_key_file)
+            # Generate DVD labels from HTML templates
+            tap_dialog.gauge_update(50, text='Generating DVD labels',
+                                    update_text=True)
+            generate_dvd_label('private_key_label', user_fields[0],
+                               keyfile_prefix, tap_dialog)
+            generate_dvd_label('public_key_label', user_fields[0],
+                               keyfile_prefix, tap_dialog)
+            #Generate disc image for public keys
+            tap_dialog.gauge_update(70, text='Generating public-key disk image',
+                                    update_text=True)
+            generate_disk_image('public', 'S2FVK', keyfile_prefix, tap_dialog)
+            #Generate disc image for private keys
+            tap_dialog.gauge_update(80, text='Generating private-key disk image',
+                                    update_text=True)
+            generate_disk_image('private', 'S2FSK', keyfile_prefix, tap_dialog)
+            #Move the disc images and DVD labels to the shared directory
+            tap_dialog.gauge_update(90, text='Moving disk images and labels to TAW',
+                                    update_text=True)
+            cmd = 'mv {0}.iso {1}.iso {0}_key_label.pdf {1}_key_label.pdf /media/user/tashare'
+            cmd = cmd.format('public', 'private')
+            run_in_shell(cmd, tap_dialog)
+            tap_dialog.gauge_update(100, text='Done', update_text=True)
+        finally:
+            tap_dialog.gauge_stop()
