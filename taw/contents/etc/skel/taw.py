@@ -45,7 +45,7 @@ def query_hdd_img(taw_dialog, hdd_img_name):
     return (code, img)
 
 def run_qemu(img_args, taw_dialog):
-    args = ['qemu-system-i386', '-m', '1024'] + img_args + ['-enable-kvm',
+    args = ['qemu-system-i386', '-m', '2048'] + img_args + ['-enable-kvm',
             '-cpu', 'host', '-virtfs', 'local,path=tashare,mount_tag=tashare,security_model=passthrough,id=host1']
     run_in_shell(args, taw_dialog)
 
@@ -127,13 +127,5 @@ if code == taw_dialog.OK:
                         run_xorriso(iso, writers[int(i)], taw_dialog)
                 elif code == taw_dialog.CANCEL:
                     pass
-        for pdf in detect_file_type('tashare', 'pdf'):
-            copies = ''
-            code = taw_dialog.OK
-            while not copies.isdigit() and code == taw_dialog.OK:
-                code, copies = taw_dialog.inputbox('Print how many copies of ' +
-                                                   pdf + '?')
-            if code == taw_dialog.OK:
-                run_in_shell(['lp', '-n', copies, pdf], taw_dialog)
     finally:
         pass
