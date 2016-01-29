@@ -127,5 +127,13 @@ if code == taw_dialog.OK:
                         run_xorriso(iso, writers[int(i)], taw_dialog)
                 elif code == taw_dialog.CANCEL:
                     pass
+        for pdf in detect_file_type('tashare', 'pdf'):
+            copies = ''
+            code = taw_dialog.OK
+            while not copies.isdigit() and code == taw_dialog.OK:
+                code, copies = taw_dialog.inputbox('Print how many copies of ' +
+                                                   pdf + '?')
+            if code == taw_dialog.OK:
+                run_in_shell(['lp', '-n', copies, pdf], taw_dialog)
     finally:
         pass

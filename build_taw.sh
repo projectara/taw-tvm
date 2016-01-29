@@ -10,7 +10,7 @@ apt-get install --assume-yes live-build live-boot live-config &&
 echo "Installed Debian Live infrastructure [OK]" &&
 mkdir -p taw/image &&
 cd taw/image &&
-lb config --binary-images iso-hybrid &&
+lb config --binary-images iso-hybrid -a amd64 &&
 echo "Initialized fresh Debian Live template for TAW [OK]" &&
 cd config &&
 echo "qemu qemu-utils qemu-system python3-dialog xorriso" > package-lists/taw.list.chroot &&
