@@ -128,8 +128,12 @@ if code == taw_dialog.OK:
                 elif code == taw_dialog.CANCEL:
                     pass
         for pdf in detect_file_type('tashare', 'pdf'):
-            code = taw_dialog.yesno('Print report from ' + pdf + '?')
+            copies = ''
+            code = taw_dialog.OK
+            while not copies.isdigit() and code == taw_dialog.OK:
+                code, copies = taw_dialog.inputbox('Print how many copies of ' +
+                                                   pdf + '?')
             if code == taw_dialog.OK:
-                run_in_shell(['lp', pdf], taw_dialog)
+                run_in_shell(['lp', '-n', copies, pdf], taw_dialog)
     finally:
         pass
