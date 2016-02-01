@@ -1,7 +1,7 @@
 ﻿#!/bin/bash
 
-if [ $# -ne 2 ]; then
-   echo "Require a Trusted Administrative Procedure as the first argument and a USB device as the first argument."
+if [ $# -lt 2 ]; then
+   echo "Require a Trusted Administrative Procedure as the first argument and a device as the second argument."
    exit 1
 fi
 
@@ -13,7 +13,7 @@ else
 fi
 
 apt-get update &&
-apt-get install --assume-yes live-build live-boot live-config &&
+apt-get install --assume-yes live-build live-boot live-config xorriso &&
 cd taps/$1 &&
 mkdir -p tvm &&
 cd tvm &&
@@ -30,5 +30,12 @@ mkdir -p media/user/tashare &&
 echo "Copied disk contents into TVM image [OK]" &&
 cd ../.. &&
 sudo lb build &&
-cp live-image-$ARCH.hybrid.iso "$2" &&
-echo "Wrote Debian Live ISO to USB medium [OK]"
+
+if [ $# -eq 3 ] && [ $3 = '-usb' ] && [ -w $2 ]; then
+    cp live-image-$ARCH.hybrid.iso "$2" &&
+    echo "Wrote Debian Live ISO to USB medium [OK]"
+else
+    xorriso -as cdrecord dev=$2 -blank=as_needed -eject \
+        live-image-$ARCH-hybrid.iso &&
+    echo "Wrote Debian Live ISO image to DVD medium [OK]"
+fi
