@@ -84,6 +84,11 @@ def run_qemu(img_args, taw_dialog):
             '-cpu', 'host', '-virtfs', 'local,path=tashare,mount_tag=tashare,security_model=passthrough,id=host1']
     run_in_shell_retry(args, taw_dialog)
 
+def burn_hdd_image(image, taw_dialog):
+    basename, ext = os.path.splitext(image)
+    args = ['xorriso', '-dev', basename + '.iso', '-commit_eject', 'all',
+            '-volid', basename, '-add', image]
+    run_in_shell_retry(args, taw_dialog)
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -117,6 +122,7 @@ if code == taw_dialog.OK:
                 taw_dialog.msgbox('Building TVM image: ' + tvm_img)
                 run_in_shell(['qemu-img', 'create', '-f', 'qcow2', tvm_img,
                               '32G'], taw_dialog)
+                burn_hdd_image(tvm_img, taw_dialog)
                 taw_dialog.msgbox('Running QEMU to install TVM...')
                 run_qemu(['-cdrom', img, '-hda', tvm_img], taw_dialog)
             else:
