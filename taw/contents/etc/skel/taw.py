@@ -78,6 +78,19 @@ def run_xorriso(iso, writer, taw_dialog):
             else:
                 raise err
 
+def print_pdf(pdf, copies, taw_dialog):
+    code = 'retry'
+    while code == 'retry':
+        try:
+            run_in_shell(['lp', '-n', copies, pdf], taw_dialog)
+            code = taw_dialog.OK
+        except subprocess.CalledProcessError as err:
+            code = taw_dialog.yesno('lp failed.  Try again?')
+            if code == taw_dialog.OK:
+                code = 'retry'
+            else:
+                raise err
+
 locale.setlocale(locale.LC_ALL, '')
 
 taw_dialog = dialog.Dialog(dialog="dialog")
@@ -114,6 +127,14 @@ if code == taw_dialog.OK:
                 run_qemu(['-cdrom', img, '-hda', tvm_img], taw_dialog)
             else:
                 exit(-1)
+        for pdf in detect_file_type('tashare', 'pdf'):
+            copies = ''
+            code = taw_dialog.OK
+            while not copies.isdigit() and code == taw_dialog.OK:
+                code, copies = taw_dialog.inputbox('Print how many copies of ' +
+                                                   pdf + '?')
+            if code == taw_dialog.OK and int(copies) > 0:
+                print_pdf(pdf, copies, taw_dialog)
         for iso in detect_file_type('tashare', 'iso'):
             code = taw_dialog.yesno('Burn optical disks from ' + iso + '?')
             if code == taw_dialog.OK:
@@ -127,13 +148,5 @@ if code == taw_dialog.OK:
                         run_xorriso(iso, writers[int(i)], taw_dialog)
                 elif code == taw_dialog.CANCEL:
                     pass
-        for pdf in detect_file_type('tashare', 'pdf'):
-            copies = ''
-            code = taw_dialog.OK
-            while not copies.isdigit() and code == taw_dialog.OK:
-                code, copies = taw_dialog.inputbox('Print how many copies of ' +
-                                                   pdf + '?')
-            if code == taw_dialog.OK:
-                run_in_shell(['lp', '-n', copies, pdf], taw_dialog)
     finally:
         pass
