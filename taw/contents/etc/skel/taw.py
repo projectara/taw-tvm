@@ -44,11 +44,6 @@ def query_hdd_img(taw_dialog, hdd_img_name):
             taw_dialog.msgbox('Please enter a path to a QEMU image.')
     return (code, img)
 
-def run_qemu(img_args, taw_dialog):
-    args = ['qemu-system-i386', '-m', '2048'] + img_args + ['-enable-kvm',
-            '-cpu', 'host', '-virtfs', 'local,path=tashare,mount_tag=tashare,security_model=passthrough,id=host1']
-    run_in_shell(args, taw_dialog)
-
 def detect_file_type(top, ext):
     for (path, dirs, files) in os.walk(top):
         for file in files:
@@ -61,35 +56,34 @@ def detect_disk_writers():
         if fnmatch.fnmatch(dev, 'sr*'):
             yield '/dev/' + dev
 
-def run_xorriso(iso, writer, taw_dialog):
+def run_in_shell_retry(args, taw_dialog):
     code = 'retry'
     while code == 'retry':
         try:
-            args = ['xorriso', '-as', 'cdrecord', 'dev=' + writer,
-                    '-blank=as_needed', '-eject', iso]
             run_in_shell(args, taw_dialog)
-            code = taw_dialog.yesno('Was the disk written successfully?')
+            code = taw_dialog.yesno('Did {0} succeed?'.format(args[0]))
             if code == taw_dialog.CANCEL:
                 code = 'retry'
         except subprocess.CalledProcessError as err:
-            code = taw_dialog.yesno('xorriso failed.  Try again?')
+            code = taw_dialog.yesno('{0} failed.  Try again?'.format(args[0]))
             if code == taw_dialog.OK:
                 code = 'retry'
             else:
                 raise err
 
+def run_xorriso(iso, writer, taw_dialog):
+    args = ['xorriso', '-as', 'cdrecord', 'dev=' + writer,
+            '-blank=as_needed', '-eject', iso]
+    run_in_shell_retry(args, taw_dialog)
+
 def print_pdf(pdf, copies, taw_dialog):
-    code = 'retry'
-    while code == 'retry':
-        try:
-            run_in_shell(['lp', '-n', copies, pdf], taw_dialog)
-            code = taw_dialog.OK
-        except subprocess.CalledProcessError as err:
-            code = taw_dialog.yesno('lp failed.  Try again?')
-            if code == taw_dialog.OK:
-                code = 'retry'
-            else:
-                raise err
+    run_in_shell_retry(['lp', '-n', copies, pdf], taw_dialog)
+
+def run_qemu(img_args, taw_dialog):
+    args = ['qemu-system-i386', '-m', '2048'] + img_args + ['-enable-kvm',
+            '-cpu', 'host', '-virtfs', 'local,path=tashare,mount_tag=tashare,security_model=passthrough,id=host1']
+    run_in_shell_retry(args, taw_dialog)
+
 
 locale.setlocale(locale.LC_ALL, '')
 
