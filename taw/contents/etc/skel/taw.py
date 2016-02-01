@@ -71,6 +71,18 @@ def run_in_shell_retry(args, taw_dialog):
             else:
                 raise err
 
+def burn_iso(iso, taw_dialog):
+    writers = list(detect_disk_writers())
+    choices = [(str(i), dev, True) for (i, dev) in
+               enumerate(writers)]
+    (code, tags) = taw_dialog.checklist('Burn to which writers?',
+                                        choices=choices)
+    if code == taw_dialog.OK:
+        for i in tags:
+            run_xorriso(iso, writers[int(i)], taw_dialog)
+    elif code == taw_dialog.CANCEL:
+        pass
+
 def run_xorriso(iso, writer, taw_dialog):
     args = ['xorriso', '-as', 'cdrecord', 'dev=' + writer,
             '-blank=as_needed', '-eject', iso]
@@ -88,7 +100,8 @@ def burn_hdd_image(image, taw_dialog):
     basename, ext = os.path.splitext(image)
     args = ['xorriso', '-dev', basename + '.iso', '-commit_eject', 'all',
             '-volid', basename, '-add', image]
-    run_in_shell_retry(args, taw_dialog)
+    run_in_shell(args, taw_dialog)
+    burn_iso(basename + '.iso', taw_dialog)
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -138,15 +151,6 @@ if code == taw_dialog.OK:
         for iso in detect_file_type('tashare', 'iso'):
             code = taw_dialog.yesno('Burn optical disks from ' + iso + '?')
             if code == taw_dialog.OK:
-                writers = list(detect_disk_writers())
-                choices = [(str(i), dev, True) for (i, dev) in
-                           enumerate(writers)]
-                (code, tags) = taw_dialog.checklist('Burn to which writers?',
-                                                    choices=choices)
-                if code == taw_dialog.OK:
-                    for i in tags:
-                        run_xorriso(iso, writers[int(i)], taw_dialog)
-                elif code == taw_dialog.CANCEL:
-                    pass
+                burn_iso(iso, taw_dialog)
     finally:
         pass
