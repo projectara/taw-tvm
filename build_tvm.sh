@@ -30,6 +30,7 @@ mkdir -p media/user/tashare &&
 echo "Copied disk contents into TVM image [OK]" &&
 cd ../.. &&
 sudo lb build &&
+xorriso -dev live-image-amd64.hybrid.iso -volid "TVM_$1_Debian_live" &&
 
 if [ $# -eq 3 ] && [ $3 = '-usb' ] && [ -w $2 ]; then
     cp live-image-$ARCH.hybrid.iso "$2" &&

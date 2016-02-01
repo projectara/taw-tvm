@@ -21,6 +21,7 @@ cp -R ../../../contents/* . &&
 mkdir -p etc/skel/tashare &&
 cd ../../ &&
 lb build &&
+xorriso -dev live-image-amd64.hybrid.iso -volid "TAW_Debian_live" &&
 echo "Built Debian Live ISO for TAW [OK]" &&
 
 if [ $# -eq 2 ] && [ $2 = '-usb' ] && [ -w $1 ]; then
