@@ -4,9 +4,12 @@ import locale
 import dialog
 import subprocess
 from datetime import datetime
+import glob
+import re
 import os.path
 import os
 import fnmatch
+import psutil
 
 def isblkdev(path):
     mode = os.stat(path).st_mode
@@ -14,23 +17,47 @@ def isblkdev(path):
 
 def run_in_shell(cmd, d):
     try:
-        subprocess.check_output(' '.join(cmd), stderr=subprocess.STDOUT,
-                                shell=True)
+        return subprocess.check_output(' '.join(cmd), stderr=subprocess.STDOUT,
+                                       shell=True)
     except subprocess.CalledProcessError as subproc_err:
         d.msgbox('{0} ({1}): {2}'.format(subproc_err.cmd,
                                          subproc_err.returncode,
                                          subproc_err.output))
         raise subproc_err
 
+dev_pattern = ['sd*', 'sr*']
+
+def enumerate_blk_devs(taw_dialog, fstype='iso9660'):
+    i = 0
+    for pattern in dev_pattern:
+        for disk in glob.glob('/sys/block/' + pattern):
+            dev = '/dev/' + os.path.basename(disk)
+            cmd = 'blkid -s LABEL -o value ' + dev
+            try:
+                label = run_in_shell([cmd], taw_dialog)
+                if label == '':
+                    label = 'UNKNOWN' + str(i)
+                    i += 1
+                yield (str(label), dev)
+            except subprocess.CalledProcessError as err:
+                if err.returncode == 2:
+                    continue
+
 def query_blk_dev(taw_dialog, blk_dev_name):
     code = taw_dialog.OK
     present = False
+    img = ''
     while code == taw_dialog.OK and not present:
-        code, img = taw_dialog.inputbox('Please specify location of ' +
-                                        blk_dev_name + ':')
-        present = isblkdev(img)
-        if not present:
-            taw_dialog.msgbox('Please enter a path to a block device.')
+        choices = list(enumerate_blk_devs(taw_dialog))
+        code, label = taw_dialog.menu('Please specify location of ' +
+                                      blk_dev_name + ':', choices=choices)
+        if code == taw_dialog.OK:
+            choices = dict(choices)
+            present = isblkdev(choices[label])
+            if present:
+                img = choices[label]
+            else:
+                taw_dialog.msgbox('Please enter a path to a block device.')
     return (code, img)
 
 def query_hdd_img(taw_dialog, hdd_img_name):
@@ -75,13 +102,15 @@ def burn_iso(iso, taw_dialog):
     writers = list(detect_disk_writers())
     choices = [(str(i), dev, True) for (i, dev) in
                enumerate(writers)]
-    (code, tags) = taw_dialog.checklist('Burn to which writers?',
-                                        choices=choices)
-    if code == taw_dialog.OK:
-        for i in tags:
-            run_xorriso(iso, writers[int(i)], taw_dialog)
-    elif code == taw_dialog.CANCEL:
-        pass
+    if len(choices) > 0:
+        (code, tags) = taw_dialog.checklist('Burn to which writers?',
+                                            choices=choices)
+        if code == taw_dialog.OK:
+            for i in tags:
+                run_xorriso(iso, writers[int(i)], taw_dialog)
+        return code
+    else:
+        return taw_dialog.yesno('No disk writers found.  Continue anyway?')
 
 def run_xorriso(iso, writer, taw_dialog):
     args = ['xorriso', '-as', 'cdrecord', 'dev=' + writer,
@@ -101,7 +130,7 @@ def burn_hdd_image(image, taw_dialog):
     args = ['xorriso', '-dev', basename + '.iso', '-commit_eject', 'all',
             '-volid', basename, '-add', image]
     run_in_shell(args, taw_dialog)
-    burn_iso(basename + '.iso', taw_dialog)
+    return burn_iso(basename + '.iso', taw_dialog)
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -135,7 +164,9 @@ if code == taw_dialog.OK:
                 taw_dialog.msgbox('Building TVM image: ' + tvm_img)
                 run_in_shell(['qemu-img', 'create', '-f', 'qcow2', tvm_img,
                               '32G'], taw_dialog)
-                burn_hdd_image(tvm_img, taw_dialog)
+                code = burn_hdd_image(tvm_img, taw_dialog)
+                if code != taw_dialog.OK:
+                    exit(-1)
                 taw_dialog.msgbox('Running QEMU to install TVM...')
                 run_qemu(['-cdrom', img, '-hda', tvm_img], taw_dialog)
             else:

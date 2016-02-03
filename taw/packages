@@ -1,1 +1,1 @@
-qemu qemu-utils qemu-system python3-dialog xorriso
+qemu qemu-utils qemu-system python3-dialog xorriso python3-psutil
