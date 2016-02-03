@@ -137,11 +137,11 @@ locale.setlocale(locale.LC_ALL, '')
 taw_dialog = dialog.Dialog(dialog="dialog")
 taw_dialog.set_background_title("Trusted Administration Workstation")
 
-taw_choices = [('rundisk', 'Run TVM from live-disk', True),
-               ('runhdd', 'Run TVM from installed HDD image', False),
-               ('install', '', False)]
-code, tag = taw_dialog.radiolist("Select TAW activity to perform:",
-                                 choices=taw_choices)
+taw_choices = [('rundisk', 'Run TVM from live-disk'),
+               ('runhdd', 'Run TVM from installed HDD image'),
+               ('install', '')]
+code, tag = taw_dialog.menu("Select TAW activity to perform:",
+                            choices=taw_choices)
 if code == taw_dialog.OK:
     try:
         if tag == 'rundisk':
