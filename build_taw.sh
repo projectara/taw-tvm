@@ -13,7 +13,7 @@ cd taw/image &&
 lb config --binary-images iso-hybrid -a amd64 &&
 echo "Initialized fresh Debian Live template for TAW [OK]" &&
 cd config &&
-echo "qemu qemu-utils qemu-system python3-dialog xorriso" > package-lists/taw.list.chroot &&
+cat ../../packages > package-lists/taw.list.chroot &&
 echo "task-cinnamon-desktop" > package-lists/desktop.list.chroot &&
 mkdir -p includes.chroot/ &&
 cd includes.chroot/ &&
