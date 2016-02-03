@@ -139,7 +139,7 @@ taw_dialog.set_background_title("Trusted Administration Workstation")
 
 taw_choices = [('rundisk', 'Run TVM from live-disk'),
                ('runhdd', 'Run TVM from installed HDD image'),
-               ('install', '')]
+               ('install', 'Install TVM to HDD image')]
 code, tag = taw_dialog.menu("Select TAW activity to perform:",
                             choices=taw_choices)
 if code == taw_dialog.OK:
