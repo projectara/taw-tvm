@@ -20,9 +20,9 @@ def run_in_shell(cmd, d, pipe_target=None, pipe_flag='a'):
             with open(pipe_target, pipe_flag + 'b') as pipe_file:
                 pipe_file.write(pipe)
     except subprocess.CalledProcessError as subproc_err:
-        d.msgbox('%s (%d): %s\n' % (subproc_err.cmd,
-                                        subproc_err.returncode,
-                                        subproc_err.output))
+        d.msgbox('{0} ({1}): {2}\n'.format(subproc_err.cmd,
+                                           subproc_err.returncode,
+                                           subproc_err.output))
         raise subproc_err
 
 def wkhtmltopdf(html, pdf):
@@ -82,6 +82,8 @@ locale.setlocale(locale.LC_ALL, '')
 
 tap_dialog = dialog.Dialog(dialog="dialog")
 tap_dialog.set_background_title("Generate Stage 2 Firmware Keys")
+
+run_in_shell('cp -R /media/input_cdrom/* ~', tap_dialog)
 
 code, user_fields, keyfile_prefix = query_parameters(tap_dialog)
 if code == tap_dialog.OK:

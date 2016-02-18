@@ -146,19 +146,27 @@ if code == taw_dialog.OK:
     try:
         if tag == 'rundisk':
             (code, img) = query_blk_dev(taw_dialog, 'TVM disk')
-            if code == taw_dialog.OK:
-                run_qemu(['-cdrom', img], taw_dialog)
+            (indisk_code, indisk_img) = query_blk_dev(taw_dialog,
+                                                      'TVM data input disk')
+            if code == taw_dialog.OK and indisk_code == taw_dialog.OK:
+                run_qemu(['-cdrom', img, '-drive',
+                         'file={0},index=1,media=disk'.format(indisk_img)],
+                         taw_dialog)
             else:
                 exit(-1)
         elif tag == 'runhdd':
             (code, img) = query_hdd_img(taw_dialog, 'TVM image')
-            if code == taw_dialog.OK:
-                run_qemu(['-hda', img], taw_dialog)
+            (indisk_code, indisk_img) = query_blk_dev(taw_dialog,
+                                                      'TVM data input disk')
+            if code == taw_dialog.OK and indisk_code == taw_dialog.OK:
+                run_qemu(['-hda', img, '-cdrom', indisk_img], taw_dialog)
             else:
                 exit(-1)
         elif tag == 'install':
             (code, img) = query_blk_dev(taw_dialog, 'TVM disk')
-            if code == taw_dialog.OK:
+            (indisk_code, indisk_img) = query_blk_dev(taw_dialog,
+                                                      'TVM data input disk')
+            if code == taw_dialog.OK and indisk_code == taw_dialog.OK:
                 timestamp = datetime.now().strftime('%Y%m%d%H%M%s')
                 tvm_img = timestamp + '_hda.qcow2'
                 taw_dialog.msgbox('Building TVM image: ' + tvm_img)
@@ -168,7 +176,9 @@ if code == taw_dialog.OK:
                 if code != taw_dialog.OK:
                     exit(-1)
                 taw_dialog.msgbox('Running QEMU to install TVM...')
-                run_qemu(['-cdrom', img, '-hda', tvm_img], taw_dialog)
+                run_qemu(['-cdrom', img, '-hda', tvm_img, '-drive',
+                         'file={0},index=1,media=disk'.format(indisk_img)],
+                         taw_dialog)
             else:
                 exit(-1)
         for pdf in detect_file_type('tashare', 'pdf'):

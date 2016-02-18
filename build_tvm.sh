@@ -27,6 +27,7 @@ cd config/includes.chroot/ &&
 cp -R ../../../contents/* . &&
 ../../../fetch.sh &&
 mkdir -p media/user/tashare &&
+mkdir -p media/input_cdrom &&
 echo "Copied disk contents into TVM image [OK]" &&
 cd ../.. &&
 sudo lb build &&

@@ -8,15 +8,17 @@ def run_in_shell(cmd, d):
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
     except subprocess.CalledProcessError as subproc_err:
-        d.msgbox('%s (%d): %s\n'.format(subproc_err.cmd,
-                                        subproc_err.returncode,
-                                        subproc_err.output))
+        d.msgbox('{0} ({1}): {2}\n'.format(subproc_err.cmd,
+                                           subproc_err.returncode,
+                                           subproc_err.output))
         raise subproc_err
 
 locale.setlocale(locale.LC_ALL, '')
 
 tap_dialog = dialog.Dialog(dialog="dialog")
 tap_dialog.set_background_title("Reproduce ES3 bootrom")
+
+run_in_shell('cp -R /media/input_cdrom/* ~', tap_dialog)
 
 code, tag = tap_dialog.radiolist("Select revision of bootrom to build:",
                                  choices=[('es2tsb', 'ES2 flashable bootrom',

@@ -2,3 +2,5 @@
 
 chmod 777 /media/user/tashare
 mount -t 9p -o trans=virtio,version=9p2000.L,users tashare /media/user/tashare
+chmod 777 /media/input_cdrom
+mount -t iso9660 -o users LABEL=TVM_INPUT /media/input_cdrom
