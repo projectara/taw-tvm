@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 if [ $# -lt 2 ]; then
    echo "Require a Trusted Administrative Procedure as the first argument and a device as the second argument."
