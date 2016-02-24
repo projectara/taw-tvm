@@ -10,6 +10,7 @@ import os.path
 import os
 import fnmatch
 import psutil
+from multiprocessing import Pool
 
 def isblkdev(path):
     mode = os.stat(path).st_mode
@@ -103,11 +104,21 @@ def burn_iso(iso, taw_dialog):
     choices = [(str(i), dev, True) for (i, dev) in
                enumerate(writers)]
     if len(choices) > 0:
-        (code, tags) = taw_dialog.checklist('Burn to which writers?',
-                                            choices=choices)
-        if code == taw_dialog.OK:
-            for i in tags:
-                run_xorriso(iso, writers[int(i)], taw_dialog)
+        copies = ''
+        code = taw_dialog.OK
+        while not copies.isdigit() and code == taw_dialog.OK:
+            code, copies = taw_dialog.inputbox('Burn how many copies of ' +
+                                               iso + '?')
+        if code == taw_dialog.OK and copies.isdigit() and int(copies) > 0:
+            copies = int(copies)
+            (code, tags) = taw_dialog.checklist('Burn to which writers?',
+                                                choices=choices)
+            if code == taw_dialog.OK:
+                with Pool(len(tags)) as pool:
+                    while copies > 0:
+                        pool.starmap(run_xorriso, [(iso, writers[int(tag)],
+                                     taw_dialog) for tag in tags])
+                        copies -= len(tags)
         return code
     else:
         return taw_dialog.yesno('No disk writers found.  Continue anyway?')
