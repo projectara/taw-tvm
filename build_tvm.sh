@@ -23,8 +23,9 @@ echo "Initialized fresh Debian Live template for TVM [OK]" &&
 cat ../../packages > config/package-lists/tvm.list.chroot &&
 cat ../packages >> config/package-lists/tvm.list.chroot &&
 echo "Added package list for Trusted VM to image template [OK]" &&
-cd config/includes.chroot/ &&
-cp -R ../../../contents/* . &&
+cd config/ &&
+cp -R ../../config/* . &&
+cd includes.chroot/ &&
 ../../../fetch.sh &&
 mkdir -p media/user/tashare &&
 mkdir -p media/input_cdrom &&
