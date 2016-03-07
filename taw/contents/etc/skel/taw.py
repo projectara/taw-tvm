@@ -183,13 +183,13 @@ if code == taw_dialog.OK:
                 taw_dialog.msgbox('Building TVM image: ' + tvm_img)
                 run_in_shell(['qemu-img', 'create', '-f', 'qcow2', tvm_img,
                               '32G'], taw_dialog)
-                code = burn_hdd_image(tvm_img, taw_dialog)
-                if code != taw_dialog.OK:
-                    exit(-1)
                 taw_dialog.msgbox('Running QEMU to install TVM...')
                 run_qemu(['-cdrom', img, '-hda', tvm_img, '-drive',
                          'file={0},index=1,media=disk'.format(indisk_img)],
                          taw_dialog)
+                code = burn_hdd_image(tvm_img, taw_dialog)
+                if code != taw_dialog.OK:
+                    exit(-1)
             else:
                 exit(-1)
         for pdf in detect_file_type('tashare', 'pdf'):
