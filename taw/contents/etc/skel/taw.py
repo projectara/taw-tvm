@@ -136,12 +136,37 @@ def run_qemu(img_args, taw_dialog):
             '-cpu', 'host', '-virtfs', 'local,path=tashare,mount_tag=tashare,security_model=passthrough,id=host1']
     run_in_shell_retry(args, taw_dialog)
 
-def burn_hdd_image(image, taw_dialog):
-    basename, ext = os.path.splitext(image)
-    args = ['xorriso', '-dev', basename + '.iso', '-commit_eject', 'all',
-            '-volid', basename, '-add', image]
-    run_in_shell(args, taw_dialog)
-    return burn_iso(basename + '.iso', taw_dialog)
+def run_xorriso_single_file(file, volid, writer, taw_dialog):
+    cmd = ['xorriso', '-commit_eject', 'all', '-dev', writer, '-volid', volid,
+           '-add', file]
+    run_in_shell_retry(cmd, taw_dialog)
+
+def burn_file(file, taw_dialog):
+    basename, ext = os.path.splitext(file)
+    writers = list(detect_disk_writers())
+    choices = [(str(i), dev, True) for (i, dev) in
+               enumerate(writers)]
+    if len(choices) > 0:
+        copies = ''
+        code = taw_dialog.OK
+        while not copies.isdigit() and code == taw_dialog.OK:
+            code, copies = taw_dialog.inputbox('Burn how many copies of ' +
+                                               file + '?')
+        if code == taw_dialog.OK and copies.isdigit() and int(copies) > 0:
+            copies = int(copies)
+            (code, tags) = taw_dialog.checklist('Burn to which writers?',
+                                                choices=choices)
+            if code == taw_dialog.OK:
+                with Pool(len(tags)) as pool:
+                    while copies > 0:
+                        pool.starmap(run_xorriso_single_file,
+                                     [(file, basename,
+                                       writers[int(tag)], taw_dialog)
+                                      for tag in tags])
+                        copies -= len(tags)
+        return code
+    else:
+        return taw_dialog.yesno('No disk writers found.  Continue anyway?')
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -187,7 +212,7 @@ if code == taw_dialog.OK:
                 run_qemu(['-cdrom', img, '-hda', tvm_img, '-drive',
                          'file={0},index=1,media=disk'.format(indisk_img)],
                          taw_dialog)
-                code = burn_hdd_image(tvm_img, taw_dialog)
+                code = burn_file(tvm_img, taw_dialog)
                 if code != taw_dialog.OK:
                     exit(-1)
             else:
